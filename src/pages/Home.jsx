@@ -8,6 +8,9 @@ import Feed from "../components/Feed";
 import Navbar from "../components/Navbar";
 import VideoPin from "../components/VideoPin";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const Home = ({ user }) => {
 	console.log(user);
 	return (
@@ -19,13 +22,27 @@ const Home = ({ user }) => {
 						categories.map((data) => {
 							return <Category key={data.id} data={data} />;
 						})}
+					<ToastContainer
+						position="top-right"
+						autoClose={5000}
+						hideProgressBar={false}
+						newestOnTop={false}
+						closeOnClick
+						rtl={false}
+						pauseOnFocusLoss
+						draggable
+						pauseOnHover
+					/>
 				</div>
 				<div className="flex w-full justify-center items-center px-4">
 					<Routes>
-						<Route path="/" element={<Feed />} />
-						<Route path="/category/:categoryID" element={<Feed />} />
-						<Route path="/create" element={<Create categories={categories} />} />
-						<Route path="/videoDetail/:videoID" element={<VideoPin />} />
+						<Route path="/" element={<Feed toast={toast} />} />
+						<Route path="/category/:categoryID" element={<Feed toast={toast} />} />
+						<Route
+							path="/create"
+							element={<Create categories={categories} toast={toast} />}
+						/>
+						<Route path="/videoDetail/:videoID" element={<VideoPin toast={toast} />} />
 					</Routes>
 				</div>
 			</div>

@@ -15,7 +15,7 @@ import {
 } from "firebase/storage";
 import { firebaseApp } from "../firebase";
 
-const Create = ({ categories }) => {
+const Create = ({ categories, toast }) => {
 	const [title, setTitle] = useState("");
 	const [location, setLocation] = useState("");
 	const [category, setCategory] = useState("Choose a Category");
@@ -47,6 +47,7 @@ const Create = ({ categories }) => {
 			(error) => {
 				// Handle unsuccessful uploads
 				console.log(error);
+				toast.error("Video Not uploaded");
 			},
 			() => {
 				// Handle successful uploads on complete
@@ -55,6 +56,7 @@ const Create = ({ categories }) => {
 				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 					setVideoAsset(downloadURL);
 					console.log("File available at", downloadURL);
+					toast.success("Video Uploaded Successfully");
 					setLoading(false);
 				});
 			}
@@ -68,10 +70,12 @@ const Create = ({ categories }) => {
 			.then(() => {
 				// File deleted successfully
 				setVideoAsset(null);
+				toast.info("Video Deleted Successfully");
 			})
 			.catch((error) => {
 				// Uh-oh, an error occurred!
 				console.log(error);
+				toast.error("Oops !! Something went wrong");
 			});
 	};
 
