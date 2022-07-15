@@ -2,7 +2,7 @@ import { useState, Fragment, useEffect } from "react";
 import Spinner from "./Spinner";
 
 import { AiOutlineDown, AiOutlineCloudUpload } from "react-icons/ai";
-import { TiTick, TiLocation } from "react-icons/ti";
+import { TiTick, TiLocation, TiTrash } from "react-icons/ti";
 import { Listbox, Transition } from "@headlessui/react";
 
 //*firebase storage for uploading images and videos
@@ -25,7 +25,7 @@ const Create = ({ categories }) => {
 
 	const storage = getStorage(firebaseApp);
 
-	// upload function
+	//! upload function
 	const uploadVideo = (e) => {
 		setLoading(true);
 		const videoFile = e.target.files[0];
@@ -60,6 +60,21 @@ const Create = ({ categories }) => {
 			}
 		);
 	};
+
+	//! Delete video
+	const deleteVideo = () => {
+		const deleteRef = ref(storage, videoAsset);
+		deleteObject(deleteRef)
+			.then(() => {
+				// File deleted successfully
+				setVideoAsset(null);
+			})
+			.catch((error) => {
+				// Uh-oh, an error occurred!
+				console.log(error);
+			});
+	};
+
 	//Console logging our download url
 	useEffect(() => {
 		console.log(videoAsset);
@@ -180,7 +195,12 @@ const Create = ({ categories }) => {
 							)}
 						</div>
 					) : (
-						<div>something </div>
+						<div className="flex item-center justify center h-full w-full relative">
+							<div className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-red-500 absolute top-5 right-5 cursor-pointer z-10 hover:scale-110 duration-200 hover:bg-slate-600">
+								<TiTrash size={24} color={"white"} onClick={deleteVideo} />
+							</div>
+							<video src={videoAsset} controls className="h-full w-full" />
+						</div>
 					)}
 				</div>
 			</div>
