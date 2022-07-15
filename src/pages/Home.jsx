@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { categories } from "../data";
 
 import Category from "../components/Category";
 import Create from "../components/Create";
@@ -12,8 +13,11 @@ const Home = ({ user }) => {
 	return (
 		<div>
 			<Navbar user={user} />
-			<div className="flex flex-col justify-start gap-8">
-				<Category />
+			<div className="flex flex-col justify-start p-4 mt-4">
+				{categories &&
+					categories.map((data) => {
+						return <Category key={data.id} data={data} />;
+					})}
 			</div>
 			<div className="flex w-full justify-center items-center px-4">
 				<Routes>
