@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/react": "^1.6.6",
     "daisyui": "^2.19.0",
     "firebase": "^9.9.0",
     "react": "^18.2.0",

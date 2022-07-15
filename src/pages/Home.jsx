@@ -13,19 +13,21 @@ const Home = ({ user }) => {
 	return (
 		<div>
 			<Navbar user={user} />
-			<div className="flex flex-col justify-start p-4 mt-4">
-				{categories &&
-					categories.map((data) => {
-						return <Category key={data.id} data={data} />;
-					})}
-			</div>
-			<div className="flex w-full justify-center items-center px-4">
-				<Routes>
-					<Route path="/" element={<Feed />} />
-					<Route path="/category/:categoryID" element={<Feed />} />
-					<Route path="/create" element={<Create />} />
-					<Route path="/videoDetail/:videoID" element={<VideoPin />} />
-				</Routes>
+			<div className="flex w-full">
+				<div className="flex flex-col justify-start p-4 mt-4">
+					{categories &&
+						categories.map((data) => {
+							return <Category key={data.id} data={data} />;
+						})}
+				</div>
+				<div className="flex w-full justify-center items-center px-4">
+					<Routes>
+						<Route path="/" element={<Feed />} />
+						<Route path="/category/:categoryID" element={<Feed />} />
+						<Route path="/create" element={<Create categories={categories} />} />
+						<Route path="/videoDetail/:videoID" element={<VideoPin />} />
+					</Routes>
+				</div>
 			</div>
 		</div>
 	);

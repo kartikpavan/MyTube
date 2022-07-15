@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Category = ({ data }) => {
-	console.log(data);
 	return (
 		<div className="flex cursor-pointer my-4">
 			<Link to={`/category/${data.name}`}>
