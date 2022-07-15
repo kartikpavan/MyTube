@@ -1,9 +1,19 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import Spinner from "./Spinner";
 
 import { AiOutlineDown, AiOutlineCloudUpload } from "react-icons/ai";
 import { TiTick, TiLocation } from "react-icons/ti";
 import { Listbox, Transition } from "@headlessui/react";
+
+//*firebase storage for uploading images and videos
+import {
+	getStorage,
+	ref,
+	uploadBytesResumable,
+	getDownloadURL,
+	deleteObject,
+} from "firebase/storage";
+import { firebaseApp } from "../firebase";
 
 const Create = ({ categories }) => {
 	const [title, setTitle] = useState("");
@@ -12,6 +22,48 @@ const Create = ({ categories }) => {
 	const [videoAsset, setVideoAsset] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [progress, setProgress] = useState(1);
+
+	const storage = getStorage(firebaseApp);
+
+	// upload function
+	const uploadVideo = (e) => {
+		setLoading(true);
+		const videoFile = e.target.files[0];
+		console.log(videoFile);
+		//* In order to upload or download files, delete files, or get or update metadata, you must create a reference to the file you want to operate on.
+		//* A reference can be thought of as a pointer to a file in the cloud. References are lightweight,
+		const storageRef = ref(storage, `Videos/${Date.now()}-${videoFile.name}`);
+		const uploadTask = uploadBytesResumable(storageRef, videoFile);
+		// Monitor Upload Progress
+		uploadTask.on(
+			"State_changed",
+			(snapshot) => {
+				// Observe state change events such as progress, pause, and resume
+				// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+				const uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+				//Settinh up our custom progress value
+				setProgress(uploadProgress);
+			},
+			(error) => {
+				// Handle unsuccessful uploads
+				console.log(error);
+			},
+			() => {
+				// Handle successful uploads on complete
+				// For instance, get the download URL: https://firebasestorage.googleapis.com/...
+
+				getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+					setVideoAsset(downloadURL);
+					console.log("File available at", downloadURL);
+					setLoading(false);
+				});
+			}
+		);
+	};
+	//Console logging our download url
+	useEffect(() => {
+		console.log(videoAsset);
+	}, [videoAsset]);
 
 	return (
 		<div className=" flex justify-center items-center w-full h-[100vh] pt-8">
@@ -96,7 +148,7 @@ const Create = ({ categories }) => {
 				</div>
 
 				{/* file selection */}
-				<div className="flex border-2 border-gray-500 border-dotted h-[400px] w-full border-md overflow-hidden relative">
+				<div className="flex border-2 border-gray-500 border-dotted h-[400px] w-full border-md relative ">
 					{/* if there is no video uploaded then display upload form else loading screen and then the video which is alreay uploaded*/}
 					{!videoAsset ? (
 						<div className="w-full">
@@ -117,6 +169,15 @@ const Create = ({ categories }) => {
 									)}
 								</div>
 							</div>
+							{!loading && (
+								<input
+									onChange={uploadVideo}
+									type="file"
+									name="upload-image"
+									accept="video/mp4,video/x-m4v,video/*"
+									className="input absolute top-0 input-info w-full h-full opacity-0"
+								/>
+							)}
 						</div>
 					) : (
 						<div>something </div>

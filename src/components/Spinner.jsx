@@ -12,7 +12,7 @@ const Spinner = ({ msg, progress }) => {
 			<p className="text-sm md:text-xl text-center px-2 py-2 ">{msg}</p>
 			{progress && (
 				<progress
-					class="progress progress-primary w-96"
+					className="progress progress-primary w-96"
 					value={Number.parseInt(progress)}
 					max="100"
 				></progress>
