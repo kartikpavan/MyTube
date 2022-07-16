@@ -40,7 +40,7 @@ const Home = ({ user }) => {
 						<Route path="/category/:categoryID" element={<Feed toast={toast} />} />
 						<Route
 							path="/create"
-							element={<Create categories={categories} toast={toast} />}
+							element={<Create categories={categories} toast={toast} user={user} />}
 						/>
 						<Route path="/videoDetail/:videoID" element={<VideoPin toast={toast} />} />
 					</Routes>

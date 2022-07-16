@@ -1,9 +1,12 @@
-import { useState, Fragment, useEffect } from "react";
+import { useState, Fragment, useEffect, useRef } from "react";
 import Spinner from "./Spinner";
 
 import { AiOutlineDown, AiOutlineCloudUpload } from "react-icons/ai";
 import { TiTick, TiLocation, TiTrash } from "react-icons/ti";
 import { Listbox, Transition } from "@headlessui/react";
+import { useNavigate } from "react-router-dom";
+
+import { Editor } from "@tinymce/tinymce-react";
 
 //*firebase storage for uploading images and videos
 import {
@@ -14,16 +17,21 @@ import {
 	deleteObject,
 } from "firebase/storage";
 import { firebaseApp } from "../firebase";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
-const Create = ({ categories, toast }) => {
+const Create = ({ categories, toast, user }) => {
+	console.log(user);
 	const [title, setTitle] = useState("");
 	const [location, setLocation] = useState("");
 	const [category, setCategory] = useState("Choose a Category");
 	const [videoAsset, setVideoAsset] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [progress, setProgress] = useState(1);
+	const [description, setDescription] = useState("");
 
 	const storage = getStorage(firebaseApp);
+	const db = getFirestore(firebaseApp);
+	const navigate = useNavigate();
 
 	//! upload function
 	const uploadVideo = (e) => {
@@ -41,7 +49,7 @@ const Create = ({ categories, toast }) => {
 				// Observe state change events such as progress, pause, and resume
 				// Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
 				const uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-				//Settinh up our custom progress value
+				//Setting up our custom progress value
 				setProgress(uploadProgress);
 			},
 			(error) => {
@@ -70,7 +78,7 @@ const Create = ({ categories, toast }) => {
 			.then(() => {
 				// File deleted successfully
 				setVideoAsset(null);
-				toast.info("Video Deleted Successfully");
+				toast.warning("Video removed from our server");
 			})
 			.catch((error) => {
 				// Uh-oh, an error occurred!
@@ -79,10 +87,44 @@ const Create = ({ categories, toast }) => {
 			});
 	};
 
+	//tiny editor integration
+	const editorRef = useRef(null);
+
+	const getDescriptionValue = () => {
+		if (editorRef.current) {
+			console.log(editorRef.current.getContent());
+			setDescription(editorRef.current.getContent());
+		}
+	};
+
+	const uploadDetails = async () => {
+		try {
+			setLoading(true);
+			if (!title && !category && !videoAsset) {
+				toast.error("Required Fields are missing ");
+			} else {
+				const data = {
+					id: `${Date.now()}`,
+					title: title,
+					userId: user?.uid,
+					category: category,
+					description: description,
+					location: location,
+					videoUrl: videoAsset,
+				};
+
+				await setDoc(doc(db, "videos", `${Date.now()}`), data);
+				setLoading(false);
+				navigate("/", { replace: true });
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error(error);
+		}
+	};
+
 	//Console logging our download url
-	useEffect(() => {
-		console.log(videoAsset);
-	}, [videoAsset]);
+	useEffect(() => {}, [title, location, description, category]);
 
 	return (
 		<div className=" flex justify-center items-center w-full h-[100vh] pt-8">
@@ -152,14 +194,14 @@ const Create = ({ categories, toast }) => {
 					<div className="form-control w-full">
 						<label className="input-group">
 							<span>
-								<TiLocation size={28} />
+								<TiLocation className="w-22 " />
 							</span>
 							<input
 								value={location}
 								onChange={(e) => setLocation(e.target.value)}
 								type="text"
 								className="w-full p-2 text-lg input  border-gray-400 outline-none opacity-50 text-white "
-								placeholder="Enter Location"
+								placeholder=" Location"
 								required
 							/>
 						</label>
@@ -194,7 +236,7 @@ const Create = ({ categories, toast }) => {
 									type="file"
 									name="upload-image"
 									accept="video/mp4,video/x-m4v,video/*"
-									className="input absolute top-0 input-info w-full h-full opacity-0"
+									className="input absolute top-0 input-info w-full h-full opacity-0 cursor-pointer"
 								/>
 							)}
 						</div>
@@ -207,6 +249,54 @@ const Create = ({ categories, toast }) => {
 						</div>
 					)}
 				</div>
+				<Editor
+					onChange={getDescriptionValue}
+					apiKey={import.meta.env.VITE_APP_TINY_EDITOR_API_KEY}
+					onInit={(evt, editor) => (editorRef.current = editor)}
+					init={{
+						height: 500,
+						menubar: false,
+						width: "100%",
+						plugins: [
+							"advlist",
+							"autolink",
+							"lists",
+							"link",
+							"image",
+							"charmap",
+							"preview",
+							"anchor",
+							"searchreplace",
+							"visualblocks",
+							"code",
+							"fullscreen",
+							"insertdatetime",
+							"media",
+							"table",
+							"code",
+							"help",
+							"wordcount",
+						],
+						toolbar:
+							"undo redo | blocks | " +
+							"bold italic forecolor | alignleft aligncenter " +
+							"alignright alignjustify | bullist numlist outdent indent | " +
+							"removeformat | help",
+						content_style:
+							"body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+						content_css: "dark",
+					}}
+				/>
+				{loading ? (
+					<button className="btn loading w-full max-w-xl text-lg">Uploading </button>
+				) : (
+					<button
+						className="btn btn-primary w-full max-w-xl text-lg"
+						onClick={uploadDetails}
+					>
+						Upload Video
+					</button>
+				)}
 			</div>
 		</div>
 	);
