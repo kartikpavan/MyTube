@@ -1,4 +1,4 @@
-import { useState, Fragment, useEffect, useRef } from "react";
+import React, { useState, Fragment, useEffect, useRef } from "react";
 import Spinner from "./Spinner";
 
 import { AiOutlineDown, AiOutlineCloudUpload } from "react-icons/ai";
