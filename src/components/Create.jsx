@@ -146,7 +146,6 @@ const Create = ({ categories, toast, user }) => {
 								</span>
 							</Listbox.Button>
 							<Transition
-								as={Fragment}
 								leave="transition ease-in duration-100"
 								leaveFrom="opacity-100"
 								leaveTo="opacity-0"
@@ -166,7 +165,7 @@ const Create = ({ categories, toast, user }) => {
 											value={data.name}
 										>
 											{({ selected }) => (
-												<>
+												<Fragment>
 													<span
 														className={` truncate flex items-center gap-4 ${
 															selected ? "font-medium" : "font-normal"
@@ -182,7 +181,7 @@ const Create = ({ categories, toast, user }) => {
 															/>
 														</span>
 													) : null}
-												</>
+												</Fragment>
 											)}
 										</Listbox.Option>
 									))}
@@ -215,17 +214,17 @@ const Create = ({ categories, toast, user }) => {
 							<div className="flex flex-col items-center justify-center h-full w-full ">
 								<div className="flex flex-col items-center justify-center h-full w-full cursor-pointer">
 									{loading ? (
-										<>
+										<div>
 											<Spinner
 												msg={"Uploading your Video"}
 												progress={progress}
 											/>
-										</>
+										</div>
 									) : (
-										<>
+										<div>
 											<AiOutlineCloudUpload size={42} />
 											<div className="text-lg mt-2">Click to Upload </div>
-										</>
+										</div>
 									)}
 								</div>
 							</div>

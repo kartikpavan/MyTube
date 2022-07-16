@@ -30,7 +30,7 @@ const Login = () => {
 	};
 
 	return (
-		<>
+		<div>
 			<div className="h-screen w-screen">
 				<div className="overlay"></div>
 				<video src={videoBg} autoPlay loop muted />
@@ -44,7 +44,7 @@ const Login = () => {
 					</button>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 
