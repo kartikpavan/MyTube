@@ -1,3 +1,5 @@
+import React from "react";
+
 import { SiYoutubegaming, SiMyanimelist } from "react-icons/si";
 import { FaLaughSquint, FaQq, FaFilm, FaMusic } from "react-icons/fa";
 import { MdEmojiNature } from "react-icons/md";
