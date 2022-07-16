@@ -23,7 +23,7 @@ const Create = ({ categories, toast, user }) => {
 	console.log(user);
 	const [title, setTitle] = useState("");
 	const [location, setLocation] = useState("");
-	const [category, setCategory] = useState("Choose a Category");
+	const [category, setCategory] = useState("");
 	const [videoAsset, setVideoAsset] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [progress, setProgress] = useState(1);
@@ -99,8 +99,7 @@ const Create = ({ categories, toast, user }) => {
 
 	const uploadDetails = async () => {
 		try {
-			setLoading(true);
-			if (!title && !category && !videoAsset) {
+			if (title === "" || location === "" || !videoAsset || !description || !category) {
 				toast.error("Required Fields are missing ");
 			} else {
 				const data = {
@@ -124,7 +123,7 @@ const Create = ({ categories, toast, user }) => {
 	};
 
 	//Console logging our download url
-	useEffect(() => {}, [title, location, description, category]);
+	// useEffect(() => {}, [title, location, description, category]);
 
 	return (
 		<div className=" flex justify-center items-center w-full h-[100vh] pt-8">
@@ -141,7 +140,7 @@ const Create = ({ categories, toast, user }) => {
 					<Listbox value={category} onChange={setCategory} className="w-full z-50">
 						<div className="relative mt-1">
 							<Listbox.Button className="relative w-full cursor-default rounded-lg bg-primary py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
-								<span className="block truncate text-lg">{category}</span>
+								<span className="block truncate text-lg">Choose a category</span>
 								<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
 									<AiOutlineDown size={22} />
 								</span>
@@ -287,16 +286,14 @@ const Create = ({ categories, toast, user }) => {
 						content_css: "dark",
 					}}
 				/>
-				{loading ? (
-					<button className="btn loading w-full max-w-xl text-lg">Uploading </button>
-				) : (
-					<button
-						className="btn btn-primary w-full max-w-xl text-lg"
-						onClick={uploadDetails}
-					>
-						Upload Video
-					</button>
-				)}
+				<button
+					className={`btn btn-primary w-full max-w-xl text-lg ${
+						loading ? "loading" : null
+					} `}
+					onClick={uploadDetails}
+				>
+					Upload Video
+				</button>
 			</div>
 		</div>
 	);
